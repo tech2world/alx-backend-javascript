@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 export default function updateStudentGradeByCity(getListStudents, city, newGrades) {
-  const students = getListStudents;
+  const students = getListStudents(); // Call the function to get the list of students
   const updatedStudents = students.map((student) => {
     if (student.location === city) {
       const matchingGrade = newGrades.find((grade) => grade.studentId === student.id);
