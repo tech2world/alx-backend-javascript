@@ -1,34 +1,37 @@
 const fs = require('fs');
 
-function countStudents(path) {
+function countStudents(fileName) {
+  const students = {};
+  const fields = {};
+  let length = 0;
   try {
-    const data = fs.readFileSync(path, 'utf-8');
-    const lines = data.split('\n').map((line) => line.trim()).filter(Boolean);
-
-    const students = lines.map((line) => {
-      const [firstname, lastname, age, field] = line.split(',');
-      return {
-        firstname, lastname, age, field,
-      };
-    });
-
-    const studentCount = students.length;
-
-    console.log(`Number of students: ${studentCount}`);
-
-    const fields = [...new Set(students.map((student) => student.field))];
-
-    fields.forEach((field) => {
-      const fieldStudents = students.filter((student) => student.field === field);
-      const fieldStudentCount = fieldStudents.length;
-
-      if (fieldStudentCount > 0) {
-        const fieldStudentNames = fieldStudents.map((student) => student.firstname).join(', ');
-        console.log(`Number of students in ${field}: ${fieldStudentCount}. List: ${fieldStudentNames}`);
+    const content = fs.readFileSync(fileName, 'utf-8');
+    const lines = content.toString().split('\n');
+    for (let i = 0; i < lines.length; i += 1) {
+      if (lines[i]) {
+        length += 1;
+        const field = lines[i].toString().split(',');
+        if (Object.prototype.hasOwnProperty.call(students, field[3])) {
+          students[field[3]].push(field[0]);
+        } else {
+          students[field[3]] = [field[0]];
+        }
+        if (Object.prototype.hasOwnProperty.call(fields, field[3])) {
+          fields[field[3]] += 1;
+        } else {
+          fields[field[3]] = 1;
+        }
       }
-    });
+    }
+    const l = length - 1;
+    console.log(`Number of students: ${l}`);
+    for (const [key, value] of Object.entries(fields)) {
+      if (key !== 'field' && key !== 'firstname') {
+        console.log(`Number of students in ${key}: ${value}. List: ${students[key].join(', ')}`);
+      }
+    }
   } catch (error) {
-    throw new Error('Cannot load the database');
+    throw Error('Cannot load the database');
   }
 }
 
